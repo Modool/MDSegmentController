@@ -7,6 +7,48 @@
 //
 
 #import "ViewController.h"
+#import "MDHorizontalListView.h"
+
+@interface ItemViewController : UIViewController
+@end
+
+@implementation ItemViewController
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    self.view.backgroundColor = [UIColor colorWithRed:arc4random() % 255 / 255. green:arc4random() % 255 / 255. blue:arc4random() % 255 / 255. alpha:1];
+}
+@end
+
+
+@interface TableViewItemViewController : UITableViewController
+@end
+
+@implementation TableViewItemViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    self.view.backgroundColor = [UIColor colorWithRed:arc4random() % 255 / 255. green:arc4random() % 255 / 255. blue:arc4random() % 255 / 255. alpha:1];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 50;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 44;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([UITableViewCell class])];
+    if (!cell) cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([UITableViewCell class])];
+
+    cell.textLabel.text = @(indexPath.row).stringValue;
+    return cell;
+}
+
+@end
 
 @interface ViewController ()
 
@@ -14,16 +56,83 @@
 
 @implementation ViewController
 
+- (instancetype)initWithStyle:(MDSegmentControllerStyle)style {
+    if (self = [super initWithStyle:style]) {
+        self.title = @"root";
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(didClickSelectButton:)];
+
+//    self.bounces = NO;
+    self.segmentControl.spacing = 30;
+    self.segmentControl.tintColor = [UIColor blueColor];
+    self.segmentControl.textColor = [UIColor greenColor];
+    self.segmentControl.selectedTextColor = [UIColor redColor];
+    self.segmentControl.font = [UIFont systemFontOfSize:12];
+
+    self.segmentControl.indicatorEnabled = YES;
+    self.segmentControl.indicatorHeight = 3.f;
+    self.segmentControl.indicatorBackgroundColor = [UIColor greenColor];
+
+    ItemViewController *viewController1 = [[ItemViewController alloc] init];
+    viewController1.title = @"item1";
+
+    TableViewItemViewController *viewController2 = [[TableViewItemViewController alloc] init];
+    viewController2.title = @"item2item2";
+
+    ItemViewController *viewController3 = [[ItemViewController alloc] init];
+    viewController3.title = @"item3item3item3";
+
+    ItemViewController *viewController4 = [[ItemViewController alloc] init];
+    viewController4.title = @"item4";
+
+    ItemViewController *viewController5 = [[ItemViewController alloc] init];
+    viewController5.title = @"item5";
+
+    ItemViewController *viewController6 = [[ItemViewController alloc] init];
+    viewController6.title = @"item6";
+
+    ItemViewController *viewController7 = [[ItemViewController alloc] init];
+    viewController7.title = @"item7";
+
+    ItemViewController *viewController8 = [[ItemViewController alloc] init];
+    viewController8.title = @"item8";
+
+    ItemViewController *viewController9 = [[ItemViewController alloc] init];
+    viewController9.title = @"item9";
+
+    ItemViewController *viewController10 = [[ItemViewController alloc] init];
+    viewController10.title = @"item10";
+
+    ItemViewController *viewController11 = [[ItemViewController alloc] init];
+    viewController11.title = @"item11";
+
+    ItemViewController *viewController12 = [[ItemViewController alloc] init];
+    viewController12.title = @"item12";
+
+    ItemViewController *viewController13 = [[ItemViewController alloc] init];
+    viewController13.title = @"item13";
+
+    self.viewControllers = @[viewController1, viewController2, viewController3, viewController4, viewController5,
+                             viewController6, viewController7, viewController8, viewController9, viewController10,
+                             viewController11, viewController12, viewController13];
+
+//    self.viewControllers = @[viewController1, viewController2];
 }
 
+- (void)didClickSelectButton:(id)sender {
+    static NSUInteger index = 0;
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    index++;
+    index %= self.viewControllers.count;
+
+    [self setSelectedIndex:index animated:YES];
 }
-
 
 @end
