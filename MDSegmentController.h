@@ -50,6 +50,9 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 /** Color of selected segment item title, default is nil */
 @property (nonatomic, strong) UIColor *selectedTextColor;
 
+/** Ability of title to transformer, it's no transformer if NO*/
+@property (nonatomic, assign, getter=isFaded) BOOL fade;
+
 /** Spacing between cells, the default value is 0.0f,
  disabled if style is MDSegmentControllerStyleSegmentControl. */
 @property (nonatomic, assign) CGFloat spacing;

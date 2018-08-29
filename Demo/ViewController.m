@@ -70,6 +70,7 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(didClickSelectButton:)];
 
 //    self.bounces = NO;
+    self.segmentControl.fade = YES;
     self.segmentControl.spacing = 30;
     self.segmentControl.tintColor = [UIColor blueColor];
     self.segmentControl.textColor = [UIColor greenColor];

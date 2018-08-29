@@ -19,6 +19,8 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 @property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIColor *selectedTextColor;
 
+@property (nonatomic, assign) BOOL fade;
+
 @end
 
 @implementation MDSegmentItemCell
@@ -43,6 +45,25 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     [super setSelected:selected animated:animated];
 
     _titleLabel.textColor = selected ? _selectedTextColor : _textColor;
+}
+
+- (void)setSelectedProgress:(CGFloat)progress animated:(BOOL)animated {
+    [super setSelectedProgress:progress animated:animated];
+
+    if (!_fade) return;
+
+    CGFloat red = 0, green = 0, blue = 0, alpha = 0;
+    [_textColor getRed:&red green:&green blue:&blue alpha:&alpha];
+
+    CGFloat red2 = 0, green2 = 0, blue2 = 0, alpha2 = 0;
+    [_selectedTextColor getRed:&red2 green:&green2 blue:&blue2 alpha:&alpha2];
+
+    CGFloat r = red + (red2 - red) * progress;
+    CGFloat g = green + (green2 - green) * progress;
+    CGFloat b = blue + (blue2 - blue) * progress;
+    CGFloat a = alpha + (alpha2 - alpha) * progress;
+
+    _titleLabel.textColor = [UIColor colorWithRed:r green:g blue:b alpha:a];
 }
 
 @end
@@ -306,6 +327,7 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     cell.titleLabel.font = _font;
     cell.textColor = _textColor;
     cell.selectedTextColor = _selectedTextColor;
+    cell.fade = _fade;
 
     return cell;
 }
