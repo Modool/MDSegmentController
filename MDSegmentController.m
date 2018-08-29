@@ -752,6 +752,10 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     if (scrollView == _contentView) [self _scrollWithOffset:scrollView.contentOffset];
 }
 
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+    if (scrollView == _contentView) [self _scrollEndWithOffset:*targetContentOffset];
+}
+
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     if (scrollView == _contentView && !decelerate) [self _scrollEndWithOffset:scrollView.contentOffset];
 }
