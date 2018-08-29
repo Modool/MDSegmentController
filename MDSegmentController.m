@@ -642,11 +642,12 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     size.width *= _viewControllers.count;
 
     _contentView.contentSize = size;
-    _contentView.contentOffset = CGPointMake(_selectedIndex * CGRectGetWidth(_contentView.frame), 0);
 
     [_preparedViewControllers enumerateKeysAndObjectsUsingBlock:^(NSNumber *index, UIViewController *viewController, BOOL *stop) {
         [self _layoutViewController:viewController atIndex:index.unsignedIntegerValue];
     }];
+
+    [self _scrollToIndex:_selectedIndex animated:NO];
 }
 
 - (void)_layoutViewController:(UIViewController *)viewController atIndex:(NSUInteger)index {
