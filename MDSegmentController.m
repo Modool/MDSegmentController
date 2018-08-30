@@ -222,8 +222,10 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     CGFloat contentWidth = CGRectGetWidth(self.bounds);
     CGFloat width = [self _overallWidth];
     CGFloat spacing = _spacing;
-    CGFloat edgeInsets = _spacing;
-    if (width < contentWidth && _viewControllers.count) {
+    CGFloat edgeInsets = spacing;
+
+    CGFloat length = width + spacing * (_viewControllers.count - 1) + edgeInsets;
+    if (length < contentWidth && _viewControllers.count) {
         spacing = (contentWidth - width) / _viewControllers.count;
         edgeInsets = spacing / 2.;
     }
@@ -236,10 +238,7 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     CGFloat width = 0;
     for (UIViewController *viewController in _viewControllers) {
         width += [self _widthForTitle:viewController.title];
-        width += _spacing;
     }
-    width -= _spacing;
-
     return width;
 }
 
@@ -701,6 +700,12 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     [_segmentControl _selectIndexProgress:indexProgress animated:YES];
 }
 
+- (void)_scrollWillEndWithOffset:(CGPoint)offset {
+    CGFloat indexProgress = offset.x / CGRectGetWidth(_contentView.frame);
+
+    [_segmentControl _selectIndexProgress:indexProgress animated:YES];
+}
+
 - (void)_scrollEndWithOffset:(CGPoint)offset {
     CGFloat x = offset.x;
     NSInteger index = x / CGRectGetWidth(_contentView.frame);
@@ -753,7 +758,7 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-    if (scrollView == _contentView) [self _scrollEndWithOffset:*targetContentOffset];
+    if (scrollView == _contentView) [self _scrollWillEndWithOffset:*targetContentOffset];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
@@ -767,10 +772,6 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
     if (scrollView == _contentView) [self _scrollEndWithOffset:scrollView.contentOffset];
 }
-
-//- (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView *)scrollView {
-//    [self _updateContentViewlayout];
-//}
 
 #pragma mark - MDHorizontalListViewDelegate
 
