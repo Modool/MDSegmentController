@@ -105,7 +105,7 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 /**
  Method to initilize with style
 
- @param style  style of layout and kind of view, the segment can be layout either
+ @param style  style of layout and kind of view, the segment can be layout in either content view or title view.
  @return MDSegmentController instance
  */
 - (instancetype)initWithStyle:(MDSegmentControllerStyle)style NS_DESIGNATED_INITIALIZER;
