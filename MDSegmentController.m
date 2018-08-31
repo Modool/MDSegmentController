@@ -10,7 +10,8 @@
 
 #import "MDHorizontalListView.h"
 
-const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
+const CGFloat MDSegmentControllerSegmentControlMinimumHeight = 20.f;
+const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
 @interface MDSegmentItemCell : MDHorizontalListViewCell
 
@@ -100,6 +101,7 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     if (self = [super initWithFrame:CGRectZero]) {
         _style = style;
         _container = container;
+        _spacing = MDSegmentControllerSegmentSpacingDynamic;
 
         if (style & MDSegmentControllerStyleSegmentControl) {
             _segmentControl = [[UISegmentedControl alloc] initWithFrame:CGRectZero];
@@ -187,6 +189,15 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     }
 }
 
+- (void)setMinimumSpacing:(CGFloat)minimumSpacing {
+    if (_minimumSpacing != minimumSpacing) {
+        _minimumSpacing = minimumSpacing;
+
+        [self _updateSpacing];
+        [self _reloadData];
+    }
+}
+
 - (CGFloat)spacing {
     return _spacing;
 }
@@ -207,12 +218,16 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     return _horizontalListView.indicatorEnabled;
 }
 
-- (void)setIndicatorBackgroundColor:(UIColor *)indicatorBackgroundColor {
-    _horizontalListView.indicatorBackgroundColor = indicatorBackgroundColor;
+- (CALayer *)indicatorLayer {
+    return _horizontalListView.indicatorLayer;
 }
 
-- (UIColor *)indicatorBackgroundColor {
-    return _horizontalListView.indicatorBackgroundColor;
+- (void)setIndicatorInsets:(UIEdgeInsets)indicatorInsets {
+    _horizontalListView.indicatorInsets = indicatorInsets;
+}
+
+- (UIEdgeInsets)indicatorInsets {
+    return _horizontalListView.indicatorInsets;
 }
 
 - (void)setIndicatorHeight:(CGFloat)indicatorHeight {
@@ -236,16 +251,26 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 - (void)_updateSpacing {
     if (_style & MDSegmentControllerStyleSegmentControl) return;
 
-    CGFloat contentWidth = CGRectGetWidth(self.bounds);
-    CGFloat width = [self _overallWidth];
-    CGFloat spacing = _spacing;
+    CGFloat spacing = _minimumSpacing;
     CGFloat edgeInsets = spacing;
 
-    CGFloat length = width + spacing * (_viewControllers.count - 1) + edgeInsets;
+    CGFloat contentWidth = CGRectGetWidth(self.frame);
+    CGFloat width = [self _overallWidth];
+
+    BOOL dynamic = _spacing == MDSegmentControllerSegmentSpacingDynamic;
+    if (!dynamic) spacing = _spacing;
+
+    CGFloat length = width + spacing * (_viewControllers.count - 1) + spacing;
     if (length < contentWidth && _viewControllers.count) {
-        spacing = (contentWidth - width) / _viewControllers.count;
+        if (dynamic) {
+            spacing = (contentWidth - width) / _viewControllers.count;
+            length = width + spacing * (_viewControllers.count - 1);
+        }
+        edgeInsets = (contentWidth - length) / 2.;
+    } else {
         edgeInsets = spacing / 2.;
     }
+    
     _actualSpacing = spacing;
     _horizontalListView.cellSpacing = _actualSpacing;
     _horizontalListView.contentInset = UIEdgeInsetsMake(0, edgeInsets, 0, edgeInsets);
@@ -413,7 +438,7 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     _preparedViewControllers = [NSMutableDictionary<NSNumber *, UIViewController *> dictionary];
 
     _bounces = YES;
-    _segmentControlSize = CGSizeMake(0, MDSegmentControllerSegmentControlMaximumHeight);
+    _segmentControlSize = CGSizeMake(0, MDSegmentControllerSegmentControlMinimumHeight);
     _lock = [[NSRecursiveLock alloc] init];
 }
 
@@ -528,7 +553,7 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 
 - (void)setSegmentControlSize:(CGSize)segmentControlSize {
     [_lock lock];
-    segmentControlSize.height = MAX(segmentControlSize.height, MDSegmentControllerSegmentControlMaximumHeight);
+    segmentControlSize.height = MAX(segmentControlSize.height, MDSegmentControllerSegmentControlMinimumHeight);
     _segmentControlSize = segmentControlSize;
 
     if (self.viewLoaded) [self _updateContentViewlayout];
@@ -585,7 +610,7 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     [preparedViewControllers enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, UIViewController *viewController, BOOL *stop) {
         if (![indexes containsIndex:key.unsignedIntegerValue]) {
             [viewController beginAppearanceTransition:NO animated:NO];
-            
+
             [self _unloadViewController:viewController atIndex:key.unsignedIntegerValue];
 
             [viewController endAppearanceTransition];
@@ -701,7 +726,9 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
         _segmentControl.frame = (CGRect){0, 0, segmentSize};
         _contentView.frame = UIEdgeInsetsInsetRect(bounds, UIEdgeInsetsMake(insets.top, 0, insets.bottom, 0));
     } else {
-        _segmentControl.frame = (CGRect){0, insets.top, CGRectGetWidth(bounds), segmentSize.height};
+        if (segmentSize.width == 0) segmentSize.width = CGRectGetWidth(bounds);
+
+        _segmentControl.frame = (CGRect){(CGRectGetWidth(bounds) - segmentSize.width) / 2., insets.top, segmentSize};
         _contentView.frame = (CGRect){0, insets.top + segmentSize.height, CGRectGetWidth(bounds), CGRectGetHeight(bounds) - insets.top - insets.bottom - segmentSize.height};
     }
     CGSize size = _contentView.frame.size;

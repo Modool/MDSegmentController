@@ -23,6 +23,8 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
     MDSegmentControllerStyleSegmentControlEmbedTitleView  = MDSegmentControllerStyleSegmentControl | MDSegmentControllerStyleEmbededTitleView,
 };
 
+UIKIT_EXTERN const CGFloat MDSegmentControllerSegmentSpacingDynamic;
+
 @class MDSegmentController;
 @protocol MDSegmentControllerDelegate <NSObject>
 
@@ -64,9 +66,13 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 /** Ability of title to transformer, it's no transformer if NO*/
 @property (nonatomic, assign, getter=isFaded) BOOL fade;
 
-/** Spacing between cells, the default value is 0.0f,
+/** Spacing between cells, the default value is MDSegmentControllerSegmentSpacingDynamic,
  disabled if style is MDSegmentControllerStyleSegmentControl. */
 @property (nonatomic, assign) CGFloat spacing;
+
+/** Minimum spacing between cells, the default value is 0,
+ disabled if style is MDSegmentControllerStyleSegmentControl. */
+@property (nonatomic, assign) CGFloat minimumSpacing;
 
 /** Item is homodisperse in segment when overall width is less than width of content view,
  or align left, default is NO, disabled if style is MDSegmentControllerStyleSegmentControl. */
@@ -78,14 +84,19 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 
 /** background color of indicator, default is 2.f,
  disabled if style is MDSegmentControllerStyleSegmentControl */
-@property (nonatomic, strong) UIColor *indicatorBackgroundColor;
+@property (nonatomic, strong) CALayer *indicatorLayer;
+
+/** inset of indicator, default is UIEdgeInsetsZero,
+ disabled if style is MDSegmentControllerStyleSegmentControl */
+@property (nonatomic, assign) UIEdgeInsets indicatorInsets;
 
 /** Height of indicator, default is 2.f,
  disabled if style is MDSegmentControllerStyleSegmentControl */
 @property (nonatomic, assign) CGFloat indicatorHeight;
 
 /** Width of indicator, default is dynamic,
- disabled if style is MDSegmentControllerStyleSegmentControl */
+ disabled if style is MDSegmentControllerStyleSegmentControl,
+ disabled if indicatorInset is not empty. */
 @property (nonatomic, assign) CGFloat indicatorWidth;
 
 @end
@@ -110,7 +121,8 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 @property (nonatomic, assign) NSUInteger selectedIndex;
 - (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated;
 
-/** The width of segment controll will be view's width if style is MDSegmentControllerStyleEmbededContentView. */
+/** The width of segment controll will be view's width if style is
+ MDSegmentControllerStyleEmbededContentView and segmentControlSize.width is 0. */
 @property (nonatomic, assign) CGSize segmentControlSize;
 
 /**

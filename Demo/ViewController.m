@@ -108,6 +108,7 @@
 - (instancetype)initWithStyle:(MDSegmentControllerStyle)style {
     if (self = [super initWithStyle:style]) {
         self.title = @"root";
+        self.segmentControlSize = CGSizeMake(0, 30);
     }
     return self;
 }
@@ -122,14 +123,17 @@
 //    self.bounces = NO;
     self.segmentControl.fade = YES;
     self.segmentControl.spacing = 30;
+//    self.segmentControl.minimumSpacing = 20;
     self.segmentControl.tintColor = [UIColor blueColor];
     self.segmentControl.textColor = [UIColor greenColor];
     self.segmentControl.selectedTextColor = [UIColor redColor];
     self.segmentControl.font = [UIFont systemFontOfSize:12];
 
     self.segmentControl.indicatorEnabled = YES;
-    self.segmentControl.indicatorHeight = 3.f;
-    self.segmentControl.indicatorBackgroundColor = [UIColor greenColor];
+    self.segmentControl.indicatorHeight = 30;
+    self.segmentControl.indicatorInsets = UIEdgeInsetsMake(0, -10, 0, -10);
+    self.segmentControl.indicatorLayer.backgroundColor = [[[UIColor greenColor] colorWithAlphaComponent:0.4] CGColor];
+    self.segmentControl.indicatorLayer.cornerRadius = 15.f;
 
     ItemViewController *viewController1 = [[ItemViewController alloc] init];
     viewController1.title = @"item1";
