@@ -18,6 +18,31 @@
 
     self.view.backgroundColor = [UIColor colorWithRed:arc4random() % 255 / 255. green:arc4random() % 255 / 255. blue:arc4random() % 255 / 255. alpha:1];
 }
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+
+    NSLog(@"will appear: %@", self.title);
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    NSLog(@"did appear: %@", self.title);
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
+    NSLog(@"will disappear: %@", self.title);
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+
+    NSLog(@"did disappear: %@", self.title);
+}
+
 @end
 
 
@@ -30,6 +55,30 @@
     [super viewDidLoad];
 
     self.view.backgroundColor = [UIColor colorWithRed:arc4random() % 255 / 255. green:arc4random() % 255 / 255. blue:arc4random() % 255 / 255. alpha:1];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+
+    NSLog(@"will appear: %@", self.title);
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    NSLog(@"did appear: %@", self.title);
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
+    NSLog(@"will disappear: %@", self.title);
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+
+    NSLog(@"did disappear: %@", self.title);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -50,7 +99,7 @@
 
 @end
 
-@interface ViewController ()
+@interface ViewController () <MDSegmentControllerDelegate>
 
 @end
 
@@ -69,6 +118,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(didClickSelectButton:)];
 
+    self.delegate = self;
 //    self.bounces = NO;
     self.segmentControl.fade = YES;
     self.segmentControl.spacing = 30;
@@ -85,10 +135,10 @@
     viewController1.title = @"item1";
 
     TableViewItemViewController *viewController2 = [[TableViewItemViewController alloc] init];
-    viewController2.title = @"item2item2";
+    viewController2.title = @"item222222";
 
     ItemViewController *viewController3 = [[ItemViewController alloc] init];
-    viewController3.title = @"item3item3item3";
+    viewController3.title = @"item33333333";
 
     ItemViewController *viewController4 = [[ItemViewController alloc] init];
     viewController4.title = @"item4";
@@ -135,5 +185,14 @@
 
     [self setSelectedIndex:index animated:YES];
 }
+
+//- (BOOL)segmentController:(MDSegmentController *)segmentController shouldSelectViewController:(UIViewController *)viewController {
+//    NSLog(@"should select view controller: %@ atIndex: %ld", viewController, [[segmentController viewControllers] indexOfObject:viewController]);
+//    return YES;
+//}
+//
+//- (void)segmentController:(MDSegmentController *)segmentController didSelectViewController:(UIViewController *)viewController {
+//    NSLog(@"select view controller: %@ atIndex: %ld", viewController, [[segmentController viewControllers] indexOfObject:viewController]);
+//}
 
 @end

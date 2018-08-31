@@ -68,10 +68,21 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 
 @end
 
-@interface MDSegmentControl () <MDHorizontalListViewDataSource> {
+@protocol MDSegmentControlContainer <NSObject>
+
+@property (nonatomic, assign, readonly) NSUInteger selectedIndex;
+
+- (BOOL)segmentControl:(MDSegmentControl *)segmentControl shouldSelectAtIndex:(NSUInteger)index;
+- (void)segmentControl:(MDSegmentControl *)segmentControl didSelectAtIndex:(NSUInteger)index;
+
+@end
+
+@interface MDSegmentControl () <MDHorizontalListViewDataSource, MDHorizontalListViewDelegate> {
     CGFloat _spacing;
     CGFloat _actualSpacing;
 }
+
+@property (nonatomic, weak, readonly) id<MDSegmentControlContainer> container;
 
 @property (nonatomic, assign, readonly) MDSegmentControllerStyle style;
 @property (nonatomic, strong, readonly) MDHorizontalListView *horizontalListView;
@@ -83,15 +94,21 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 @implementation MDSegmentControl
 @dynamic tintColor;
 
-- (instancetype)initWithStyle:(MDSegmentControllerStyle)style {
+- (instancetype)initWithStyle:(MDSegmentControllerStyle)style container:(id<MDSegmentControlContainer>)container {
+    NSParameterAssert(container);
+
     if (self = [super initWithFrame:CGRectZero]) {
         _style = style;
+        _container = container;
+
         if (style & MDSegmentControllerStyleSegmentControl) {
             _segmentControl = [[UISegmentedControl alloc] initWithFrame:CGRectZero];
+            [_segmentControl addTarget:self action:@selector(didSegmentValueChanged:) forControlEvents:UIControlEventValueChanged];
             [self addSubview:_segmentControl];
         } else {
             _horizontalListView = [[MDHorizontalListView alloc] initWithFrame:CGRectZero];
             _horizontalListView.dataSource = self;
+            _horizontalListView.delegate = self;
             _horizontalListView.allowsNoneSelection = NO;
             _horizontalListView.allowsMultipleSelection = NO;
             _horizontalListView.selectionStyle = MDHorizontalListViewCellSelectionStyleNone;
@@ -106,7 +123,7 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-    if (self = [self initWithStyle:MDSegmentControllerStyleDefault]) {
+    if (self = [self initWithStyle:MDSegmentControllerStyleDefault container:nil]) {
         self.frame = frame;
     }
     return self;
@@ -251,7 +268,7 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 - (void)_selectIndexProgress:(CGFloat)indexProgress animated:(BOOL)animated {
     if (_style & MDSegmentControllerStyleSegmentControl) return;
 
-    [_horizontalListView selectIndexProgress:indexProgress animated:animated];
+    [_horizontalListView selectIndexProgress:indexProgress animated:animated nearestPosition:MDHorizontalListViewPositionCenter];
 }
 
 - (BOOL)_selectAtIndex:(NSInteger)index animated:(BOOL)animated {
@@ -331,9 +348,28 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     return cell;
 }
 
+- (BOOL)horizontalListView:(MDHorizontalListView *)horizontalListView shouldSelectCellAtIndex:(NSInteger)index {
+    return [_container segmentControl:self shouldSelectAtIndex:index];
+}
+
+- (void)horizontalListView:(MDHorizontalListView *)horizontalListView didSelectCellAtIndex:(NSInteger)index {
+    [_container segmentControl:self didSelectAtIndex:index];
+}
+
+#pragma mark - actions
+
+- (IBAction)didSegmentValueChanged:(UISegmentedControl *)segmentedControl {
+    NSUInteger index = segmentedControl.selectedSegmentIndex;
+    BOOL shouldSelect = [_container segmentControl:self shouldSelectAtIndex:index];
+    if (shouldSelect) {
+        [_container segmentControl:self didSelectAtIndex:index];
+    } else {
+        segmentedControl.selectedSegmentIndex = _container.selectedIndex;
+    }
+}
 @end
 
-@interface MDSegmentController () <MDHorizontalListViewDelegate, UIScrollViewDelegate> {
+@interface MDSegmentController () <MDSegmentControlContainer, MDHorizontalListViewDelegate, UIScrollViewDelegate> {
     __weak id<MDSegmentControllerDelegate> _delegate;
 
     NSMutableArray<UIViewController *> *_viewControllers;
@@ -393,10 +429,8 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 
     [self.view addSubview:_contentView];
 
-    _segmentControl = [[MDSegmentControl alloc] initWithStyle:_style];
+    _segmentControl = [[MDSegmentControl alloc] initWithStyle:_style container:self];
     _segmentControl.viewControllers = _viewControllers;
-    _segmentControl.horizontalListView.delegate = self;
-    [_segmentControl.segmentControl addTarget:self action:@selector(didSegmentValueChanged:) forControlEvents:UIControlEventValueChanged];
 
     if (_style & MDSegmentControllerStyleEmbededTitleView) {
         self.navigationItem.titleView = _segmentControl;
@@ -541,30 +575,30 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     for (UIViewController *viewController in _viewControllers) {
         [viewController removeObserver:self forKeyPath:@"title"];
     }
-
-    [_preparedViewControllers enumerateKeysAndObjectsUsingBlock:^(NSNumber *index, UIViewController *viewController, BOOL *stop) {
-        [self _unloadViewController:viewController atIndex:index.unsignedIntegerValue];
-    }];
+    [self _reloadViewControllersAtIndexes:nil];
 }
 
-- (void)_loadViewControllersAtIndexes:(NSIndexSet *)indexes {
+- (void)_reloadViewControllersAtIndexes:(NSIndexSet *)indexes {
     NSArray<UIViewController *> *viewControllers = [_viewControllers copy];
+    NSDictionary<NSNumber *, UIViewController *> *preparedViewControllers = [_preparedViewControllers copy];
 
-    [indexes enumerateIndexesUsingBlock:^(NSUInteger index, BOOL *stop) {
-        if ([self->_preparedViewControllers.allKeys containsObject:@(index)]) return;
+    [preparedViewControllers enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, UIViewController *viewController, BOOL *stop) {
+        if (![indexes containsIndex:key.unsignedIntegerValue]) {
+            [viewController beginAppearanceTransition:NO animated:NO];
+            
+            [self _unloadViewController:viewController atIndex:key.unsignedIntegerValue];
 
-        UIViewController *viewController = viewControllers[index];
-        [self _loadViewController:viewController atIndex:index];
+            [viewController endAppearanceTransition];
+        }
     }];
-}
 
-- (void)_unloadViewControllersExcludeIndexes:(NSIndexSet *)indexes {
-    for (NSNumber *indexKey in _preparedViewControllers.allKeys) {
-        if ([indexes containsIndex:indexKey.unsignedIntegerValue]) continue;
+    [viewControllers enumerateObjectsUsingBlock:^(UIViewController *viewController, NSUInteger index, BOOL *stop) {
+        if ([indexes containsIndex:index] && ![preparedViewControllers.allKeys containsObject:@(index)]) {
+            [viewController beginAppearanceTransition:YES animated:NO];
 
-        UIViewController *viewController = _preparedViewControllers[indexKey];
-        [self _unloadViewController:viewController atIndex:indexKey.unsignedIntegerValue];
-    }
+            [self _loadViewController:viewController atIndex:index];
+        }
+    }];
 }
 
 - (void)_prepareToSelectIndex:(NSUInteger)selectedIndex animated:(BOOL)animated {
@@ -572,8 +606,14 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     BOOL shouldSelect = [self _shouldSelectViewController:viewController];
     if (!shouldSelect) return;
 
+    [self _didSelectAtIndex:selectedIndex animated:animated];
+}
+
+- (void)_didSelectAtIndex:(NSUInteger)selectedIndex animated:(BOOL)animated {
     _selectedIndex = selectedIndex;
+    
     [self _selectAtIndex:selectedIndex animated:animated];
+    [self _didSelectViewController:_viewControllers[selectedIndex]];
 }
 
 - (BOOL)_shouldSelectViewController:(UIViewController *)viewController {
@@ -595,9 +635,8 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     [viewController willMoveToParentViewController:self];
 
     [self addChildViewController:viewController];
-
-    [self _layoutViewController:viewController atIndex:index];
     [self.contentView addSubview:viewController.view];
+    [self _layoutViewController:viewController atIndex:index];
 
     [viewController didMoveToParentViewController:self];
 
@@ -613,6 +652,12 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     [viewController didMoveToParentViewController:nil];
 
     [_preparedViewControllers removeObjectForKey:@(index)];
+}
+
+- (void)_didFinishViewControllerAtIndex:(NSUInteger)index {
+    UIViewController *viewController = _viewControllers[index];
+
+    [viewController endAppearanceTransition];
 }
 
 - (void)_didUpdateViewControllerTitleAtIndex:(NSUInteger)index {
@@ -659,10 +704,11 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
         _segmentControl.frame = (CGRect){0, insets.top, CGRectGetWidth(bounds), segmentSize.height};
         _contentView.frame = (CGRect){0, insets.top + segmentSize.height, CGRectGetWidth(bounds), CGRectGetHeight(bounds) - insets.top - insets.bottom - segmentSize.height};
     }
-    CGSize size = _contentView.bounds.size;
+    CGSize size = _contentView.frame.size;
     size.width *= _viewControllers.count;
 
     _contentView.contentSize = size;
+    self.preferredContentSize = _contentView.frame.size;
 
     [_preparedViewControllers enumerateKeysAndObjectsUsingBlock:^(NSNumber *index, UIViewController *viewController, BOOL *stop) {
         [self _layoutViewController:viewController atIndex:index.unsignedIntegerValue];
@@ -677,27 +723,22 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 }
 
 - (void)_scrollWithOffset:(CGPoint)offset {
-    CGFloat x = offset.x;
-    CGFloat indexProgress = x / CGRectGetWidth(_contentView.frame);
+    CGFloat indexProgress = offset.x / CGRectGetWidth(_contentView.frame);
 
-    NSInteger index = indexProgress;
-    NSInteger previousIndex = index - 1;
-    NSInteger nextIndex = index + 1;
+    CGFloat index1 = floor(indexProgress);
+    CGFloat index2 = ceil(indexProgress);
+    NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
 
-    NSMutableIndexSet *indexes = [NSMutableIndexSet indexSetWithIndex:index];
-    if (previousIndex >= 0 && previousIndex < _viewControllers.count) {
-        [indexes addIndex:previousIndex];
+    if (index1 >= 0 && index1 < _viewControllers.count) {
+        [indexes addIndex:index1];
     }
-    if (nextIndex >= 0 && nextIndex < _viewControllers.count) {
-        [indexes addIndex:nextIndex];
+    if (index2 >= 0 && index2 < _viewControllers.count) {
+        [indexes addIndex:index2];
     }
-
-    [self _loadViewControllersAtIndexes:indexes];
-    [self _unloadViewControllersExcludeIndexes:indexes];
+    [self _reloadViewControllersAtIndexes:indexes];
 
     if (!_contentView.dragging) return;
-
-    [_segmentControl _selectIndexProgress:indexProgress animated:YES];
+    [_segmentControl _selectIndexProgress:indexProgress animated:NO];
 }
 
 - (void)_scrollWillEndWithOffset:(CGPoint)offset {
@@ -706,19 +747,19 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
     [_segmentControl _selectIndexProgress:indexProgress animated:YES];
 }
 
-- (void)_scrollEndWithOffset:(CGPoint)offset {
+- (void)_scrollDidEndWithOffset:(CGPoint)offset dragging:(BOOL)dragging {
     CGFloat x = offset.x;
     NSInteger index = x / CGRectGetWidth(_contentView.frame);
 
-    UIViewController *viewController = _viewControllers[index];
-    BOOL shouldSelect = [self _shouldSelectViewController:viewController];
+    if (dragging) {
+        UIViewController *viewController = _viewControllers[index];
+        BOOL shouldSelect = [self _shouldSelectViewController:viewController];
 
-    index = shouldSelect ? index : _selectedIndex;
-    if (shouldSelect) {
-        [self _unloadViewControllersExcludeIndexes:[NSIndexSet indexSetWithIndex:index]];
+        index = shouldSelect ? index : _selectedIndex;
+        if (shouldSelect) [self _reloadViewControllersAtIndexes:[NSIndexSet indexSetWithIndex:index]];
     }
-
-    [self _selectAtIndex:index animated:YES];
+    [self _didSelectAtIndex:index animated:YES];
+    [self _didFinishViewControllerAtIndex:index];
 }
 
 - (void)_selectAtIndex:(NSUInteger)index animated:(BOOL)animated {
@@ -762,40 +803,26 @@ const CGFloat MDSegmentControllerSegmentControlMaximumHeight = 30.f;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    if (scrollView == _contentView && !decelerate) [self _scrollEndWithOffset:scrollView.contentOffset];
+    if (scrollView == _contentView && !decelerate) [self _scrollDidEndWithOffset:scrollView.contentOffset dragging:YES];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if (scrollView == _contentView) [self _scrollEndWithOffset:scrollView.contentOffset];
+    if (scrollView == _contentView) [self _scrollDidEndWithOffset:scrollView.contentOffset dragging:YES];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    if (scrollView == _contentView) [self _scrollEndWithOffset:scrollView.contentOffset];
+    if (scrollView == _contentView) [self _scrollDidEndWithOffset:scrollView.contentOffset dragging:NO];
 }
 
-#pragma mark - MDHorizontalListViewDelegate
+#pragma mark - MDSegmentControlContainer
 
-- (BOOL)horizontalListView:(MDHorizontalListView *)horizontalListView shouldSelectCellAtIndex:(NSInteger)index {
+- (BOOL)segmentControl:(MDSegmentControl *)segmentControl shouldSelectAtIndex:(NSUInteger)index {
     UIViewController *viewController = _viewControllers[index];
     return [self _shouldSelectViewController:viewController];
 }
 
-- (void)horizontalListView:(MDHorizontalListView *)horizontalListView didSelectCellAtIndex:(NSInteger)index {
-    [self _prepareToSelectIndex:index animated:YES];
-}
-
-#pragma mark - actions
-
-- (IBAction)didSegmentValueChanged:(UISegmentedControl *)segmentedControl {
-    NSUInteger index = segmentedControl.selectedSegmentIndex;
-    UIViewController *viewController = _viewControllers[index];
-    BOOL shouldSelect = [self _shouldSelectViewController:viewController];
-
-    if (shouldSelect) {
-        [self _prepareToSelectIndex:index animated:YES];
-    } else {
-        segmentedControl.selectedSegmentIndex = _selectedIndex;
-    }
+- (void)segmentControl:(MDSegmentControl *)segmentControl didSelectAtIndex:(NSUInteger)index {
+    [self _scrollToIndex:index animated:YES];
 }
 
 @end

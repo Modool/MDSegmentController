@@ -26,13 +26,24 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 @class MDSegmentController;
 @protocol MDSegmentControllerDelegate <NSObject>
 
+@optional
 - (BOOL)segmentController:(MDSegmentController *)segmentController shouldSelectViewController:(UIViewController *)viewController;
 
+- (void)segmentController:(MDSegmentController *)segmentController didScrollToIndex:(NSUInteger)index;
 - (void)segmentController:(MDSegmentController *)segmentController didSelectViewController:(UIViewController *)viewController;
 
 @end
 
+@protocol MDSegmentControlDelegate <NSObject>
+
+@optional
+- (void)segmentController:(MDSegmentController *)segmentController didSelectAtIndex:(NSUInteger)index;
+
+@end
+
 @interface MDSegmentControl : UIView
+
+@property (nonatomic, weak) id<MDSegmentControlDelegate> delegate;
 
 /** Default is calculated by text length,
  disabled if style is MDSegmentControllerStyleSegmentControl. */
