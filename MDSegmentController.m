@@ -482,30 +482,32 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     _contentInset = UIEdgeInsetsZero;
     _segmentControlSize = CGSizeMake(0, MDSegmentControllerSegmentControlMinimumHeight);
     _lock = [[NSRecursiveLock alloc] init];
+
+    _contentView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+    _contentView.delegate = self;
+    _contentView.pagingEnabled = YES;
+    _contentView.showsVerticalScrollIndicator = NO;
+    _contentView.showsHorizontalScrollIndicator = NO;
+
+    _segmentControl = [[MDSegmentControl alloc] initWithStyle:_style container:self];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    _contentView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-    _contentView.delegate = self;
-    _contentView.pagingEnabled = YES;
-    _contentView.showsVerticalScrollIndicator = NO;
-    _contentView.showsHorizontalScrollIndicator = NO;
+    _contentView.frame = self.view.bounds;
     _contentView.contentSize = self.view.bounds.size;
-
-    [self.view addSubview:_contentView];
-
-    _segmentControl = [[MDSegmentControl alloc] initWithStyle:_style container:self];
     _segmentControl.viewControllers = _viewControllers;
-
+    
+    [self.view addSubview:_contentView];
     if (_style & MDSegmentControllerStyleEmbededTitleView) {
         self.navigationItem.titleView = _segmentControl;
     } else {
         [self.view addSubview:_segmentControl];
     }
-    [self _loadDefaultSelectedViewController];
+    [self _loadSelectedViewController];
     [self _updateContentViewlayout];
+    [self _selectAtIndex:_selectedIndex animated:NO];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -518,7 +520,6 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     [super viewDidLayoutSubviews];
 
     [self _updateContentViewlayout];
-    [self _updateDefaultSelection];
 }
 
 - (void)dealloc {
@@ -553,12 +554,14 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
 - (void)setViewControllers:(NSArray<UIViewController *> *)viewControllers {
     [_lock lock];
+    if (_selectedIndex >= viewControllers.count) _selectedIndex = 0;
+
     [self _unloadViewControllers];
 
     _viewControllers.array = viewControllers;
     _segmentControl.viewControllers = viewControllers;
 
-    if (self.viewLoaded) [self _loadViewControllers];
+    [self _loadViewControllers];
     [_lock unlock];
 }
 
@@ -631,11 +634,16 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
 #pragma mark - private
 
-- (void)_updateDefaultSelection {
+- (void)_reloadData {
+    [_segmentControl _reloadData];
+    
+    if (_selectedIndex >= _viewControllers.count) return;
+
+    [self _loadSelectedViewController];
     [self _selectAtIndex:_selectedIndex animated:NO];
 }
 
-- (void)_loadDefaultSelectedViewController {
+- (void)_loadSelectedViewController {
     UIViewController *selectedViewController = self.selectedViewController;
     if (!selectedViewController) return;
 
@@ -646,16 +654,14 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     for (UIViewController *viewController in _viewControllers) {
         [viewController addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:NULL];
     }
-
-    [_segmentControl _reloadData];
-    [_segmentControl _selectAtIndex:_selectedIndex animated:NO];
-    [self _loadDefaultSelectedViewController];
+    if (self.viewLoaded) [self _reloadData];
 }
 
 - (void)_unloadViewControllers {
     for (UIViewController *viewController in _viewControllers) {
         [viewController removeObserver:self forKeyPath:@"title"];
     }
+
     [self _reloadViewControllersAtIndexes:nil];
 }
 

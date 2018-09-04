@@ -53,16 +53,16 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 @property (nonatomic, assign) CGFloat itemWidth;
 
 /** Font of segment item title, default is system font with label font size */
-@property (nonatomic, strong) UIFont *font;
+@property (nonatomic, strong, nullable) UIFont *font;
 
 /** Tint color of segment, default is nil */
-@property (nonatomic, strong) UIColor *tintColor;
+@property (nonatomic, strong, nullable) UIColor *tintColor;
 
 /** Color of segment item title, default is nil */
-@property (nonatomic, strong) UIColor *textColor;
+@property (nonatomic, strong, nullable) UIColor *textColor;
 
 /** Color of selected segment item title, default is nil */
-@property (nonatomic, strong) UIColor *selectedTextColor;
+@property (nonatomic, strong, nullable) UIColor *selectedTextColor;
 
 /** Ability of title to transformer, it's no transformer if NO*/
 @property (nonatomic, assign, getter=isFaded) BOOL fade;
@@ -96,7 +96,7 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 
 /** background color of indicator, default is 2.f,
  disabled if style is MDSegmentControllerStyleSegmentControl */
-@property (nonatomic, strong) CALayer *indicatorLayer;
+@property (nonatomic, strong, nullable) CALayer *indicatorLayer;
 
 /** inset of indicator, default is UIEdgeInsetsZero,
  disabled if style is MDSegmentControllerStyleSegmentControl */
@@ -115,14 +115,17 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 
 @interface MDSegmentController : UIViewController
 
-// Default is MDSegmentControllerStyleEmbededContentView | MDSegmentControllerListView.
+/** Default is MDSegmentControllerStyleEmbededContentView | MDSegmentControllerListView. */
 @property (nonatomic, assign, readonly) MDSegmentControllerStyle style;
 
+/** The segment control with UISegmentControl or MDHorizontalListView. */
 @property (nonatomic, strong, readonly) MDSegmentControl *segmentControl;
 
-@property (nonatomic, weak) id<MDSegmentControllerDelegate> delegate;
+/** The delegate to . */
+@property (nonatomic, weak, nullable) id<MDSegmentControllerDelegate> delegate;
 
-@property (nonatomic, copy) NSArray<UIViewController *> *viewControllers;
+/** */
+@property (nonatomic, copy, nullable) NSArray<UIViewController *> *viewControllers;
 
 /** Using safe area if it's UIEdgeInsetsZero */
 @property (nonatomic, assign) UIEdgeInsets contentInset;
