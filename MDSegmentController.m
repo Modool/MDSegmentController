@@ -322,9 +322,13 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 }
 
 - (void)_selectIndexProgress:(CGFloat)indexProgress animated:(BOOL)animated {
+    [self _selectIndexProgress:indexProgress animated:animated indicatorSynchronously:NO];
+}
+
+- (void)_selectIndexProgress:(CGFloat)indexProgress animated:(BOOL)animated indicatorSynchronously:(BOOL)indicatorSynchronously {
     if (_style & MDSegmentControllerStyleSegmentControl) return;
 
-    [_horizontalListView selectIndexProgress:indexProgress animated:animated nearestPosition:MDHorizontalListViewPositionCenter];
+    [_horizontalListView selectIndexProgress:indexProgress animated:animated nearestPosition:MDHorizontalListViewPositionCenter indicatorSynchronously:indicatorSynchronously];
 }
 
 - (BOOL)_selectAtIndex:(NSInteger)index animated:(BOOL)animated {
@@ -859,7 +863,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     indexProgress = MAX(0, indexProgress);
     indexProgress = MIN(indexProgress, _viewControllers.count - 1);
 
-    [_segmentControl _selectIndexProgress:indexProgress animated:YES];
+    [_segmentControl _selectIndexProgress:indexProgress animated:YES indicatorSynchronously:YES];
 
     if (floor(indexProgress) == _selectedIndex) [self _beginAppearanceTransition:YES atIndex:_selectedIndex];
 }
