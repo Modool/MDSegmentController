@@ -46,7 +46,7 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 
 @interface MDSegmentControl : UIView
 
-@property (nonatomic, weak) id<MDSegmentControlDelegate> delegate;
+@property (nonatomic, weak, nullable) id<MDSegmentControlDelegate> delegate;
 
 /** Default is calculated by text length,
  disabled if style is MDSegmentControllerStyleSegmentControl. */
@@ -121,17 +121,17 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 /** The segment control with UISegmentControl or MDHorizontalListView. */
 @property (nonatomic, strong, readonly) MDSegmentControl *segmentControl;
 
-/** The delegate to . */
+/** The delegate to notify events. */
 @property (nonatomic, weak, nullable) id<MDSegmentControllerDelegate> delegate;
 
-/** */
+/** Child view controllers .*/
 @property (nonatomic, copy, nullable) NSArray<UIViewController *> *viewControllers;
 
 /** Using safe area if it's UIEdgeInsetsZero */
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 
 @property (nonatomic, strong, readonly) UIView *contentView;
-@property (nonatomic, strong) UIViewController *selectedViewController;
+@property (nonatomic, strong, nullable) UIViewController *selectedViewController;
 
 /** Default YES. if YES, bounces past edge of content and back again */
 @property (nonatomic, assign, getter=isBounces) BOOL bounces;
