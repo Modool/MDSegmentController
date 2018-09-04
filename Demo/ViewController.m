@@ -123,6 +123,7 @@
     self.delegate = self;
     self.bounces = NO;
     self.segmentControlSize = CGSizeMake(0, 30);
+
     self.segmentControl.fade = YES;
 
     // 全屏小横条，标题动态宽度，固定边距，所有标题整体居中
@@ -191,53 +192,56 @@
     TableViewItemViewController *viewController2 = [[TableViewItemViewController alloc] init];
     viewController2.title = @"item222222";
 
-//    ItemViewController *viewController3 = [[ItemViewController alloc] init];
-//    viewController3.title = @"item33333333";
-//
-//    ItemViewController *viewController4 = [[ItemViewController alloc] init];
-//    viewController4.title = @"item4";
-//
-//    ItemViewController *viewController5 = [[ItemViewController alloc] init];
-//    viewController5.title = @"item5";
-//
-//    ItemViewController *viewController6 = [[ItemViewController alloc] init];
-//    viewController6.title = @"item6";
-//
-//    ItemViewController *viewController7 = [[ItemViewController alloc] init];
-//    viewController7.title = @"item7";
-//
-//    ItemViewController *viewController8 = [[ItemViewController alloc] init];
-//    viewController8.title = @"item8";
-//
-//    ItemViewController *viewController9 = [[ItemViewController alloc] init];
-//    viewController9.title = @"item9";
-//
-//    ItemViewController *viewController10 = [[ItemViewController alloc] init];
-//    viewController10.title = @"item10";
-//
-//    ItemViewController *viewController11 = [[ItemViewController alloc] init];
-//    viewController11.title = @"item11";
-//
-//    ItemViewController *viewController12 = [[ItemViewController alloc] init];
-//    viewController12.title = @"item12";
-//
-//    ItemViewController *viewController13 = [[ItemViewController alloc] init];
-//    viewController13.title = @"item13";
-//
-//    self.viewControllers = @[viewController1, viewController2, viewController3, viewController4, viewController5,
-//                             viewController6, viewController7, viewController8, viewController9, viewController10,
-//                             viewController11, viewController12, viewController13];
+    ItemViewController *viewController3 = [[ItemViewController alloc] init];
+    viewController3.title = @"item33333333";
 
-    self.viewControllers = @[viewController1, viewController2];
+    ItemViewController *viewController4 = [[ItemViewController alloc] init];
+    viewController4.title = @"item4";
+
+    ItemViewController *viewController5 = [[ItemViewController alloc] init];
+    viewController5.title = @"item5";
+
+    ItemViewController *viewController6 = [[ItemViewController alloc] init];
+    viewController6.title = @"item6";
+
+    ItemViewController *viewController7 = [[ItemViewController alloc] init];
+    viewController7.title = @"item7";
+
+    ItemViewController *viewController8 = [[ItemViewController alloc] init];
+    viewController8.title = @"item8";
+
+    ItemViewController *viewController9 = [[ItemViewController alloc] init];
+    viewController9.title = @"item9";
+
+    ItemViewController *viewController10 = [[ItemViewController alloc] init];
+    viewController10.title = @"item10";
+
+    ItemViewController *viewController11 = [[ItemViewController alloc] init];
+    viewController11.title = @"item11";
+
+    ItemViewController *viewController12 = [[ItemViewController alloc] init];
+    viewController12.title = @"item12";
+
+    ItemViewController *viewController13 = [[ItemViewController alloc] init];
+    viewController13.title = @"item13";
+
+    self.viewControllers = @[viewController1, viewController2, viewController3, viewController4, viewController5,
+                             viewController6, viewController7, viewController8, viewController9, viewController10,
+                             viewController11, viewController12, viewController13];
+
+//    self.viewControllers = @[viewController1, viewController2];
+    self.selectedIndex = 2;
 }
 
 - (void)didClickLeftBarButton:(id)sender {
-    static NSUInteger index = 0;
+//    static NSUInteger index = 0;
+//
+//    index++;
+//    index %= self.viewControllers.count;
+//
+//    [self setSelectedIndex:index animated:YES];
 
-    index++;
-    index %= self.viewControllers.count;
-
-    [self setSelectedIndex:index animated:YES];
+    self.viewControllers[2].title = @"hhh";
 }
 
 - (void)didClickRightBarButton:(id)sender {

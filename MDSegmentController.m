@@ -97,7 +97,6 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
 - (instancetype)initWithStyle:(MDSegmentControllerStyle)style container:(id<_MDSegmentControlContainer>)container {
     NSParameterAssert(container);
-
     if (self = [super initWithFrame:CGRectZero]) {
         _style = style;
         _container = container;
@@ -134,12 +133,17 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 - (void)layoutSubviews {
     [super layoutSubviews];
 
-    self.contentView.frame = UIEdgeInsetsInsetRect(self.bounds, _contentInset);
-
+    [self _updateContentViewLayout];
     [self _updateSpacing];
 }
 
 #pragma mark - accessor
+
+- (void)setFrame:(CGRect)frame {
+    [super setFrame:frame];
+
+    [self _updateContentViewLayout];
+}
 
 - (void)setViewControllers:(NSArray<UIViewController *> *)viewControllers {
     _viewControllers = viewControllers;
@@ -262,6 +266,10 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
 #pragma mark - private
 
+- (void)_updateContentViewLayout {
+    self.contentView.frame = UIEdgeInsetsInsetRect(self.bounds, _contentInset);
+}
+
 - (void)_updateSpacing {
     if (_style & MDSegmentControllerStyleSegmentControl) return;
 
@@ -336,7 +344,8 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
 - (void)_reloadCellAtIndex:(NSInteger)index animated:(BOOL)animated {
     if (_style & MDSegmentControllerStyleSegmentControl) {
-        _segmentControl.selectedSegmentIndex = index;
+        UIViewController *viewController = _viewControllers[index];
+        [_segmentControl setTitle:viewController.title forSegmentAtIndex:index];
     } else {
         [_horizontalListView reloadCellAtIndex:index animated:animated];
     }
@@ -496,6 +505,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
         [self.view addSubview:_segmentControl];
     }
     [self _loadDefaultSelectedViewController];
+    [self _updateContentViewlayout];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -508,6 +518,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     [super viewDidLayoutSubviews];
 
     [self _updateContentViewlayout];
+    [self _updateDefaultSelection];
 }
 
 - (void)dealloc {
@@ -620,6 +631,10 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
 #pragma mark - private
 
+- (void)_updateDefaultSelection {
+    [self _selectAtIndex:_selectedIndex animated:NO];
+}
+
 - (void)_loadDefaultSelectedViewController {
     UIViewController *selectedViewController = self.selectedViewController;
     if (!selectedViewController) return;
@@ -669,16 +684,16 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     BOOL shouldSelect = [self _shouldSelectViewController:viewController];
     if (!shouldSelect) return;
 
-    [self _didSelectAtIndex:selectedIndex animated:animated];
+    [self _didSelectAtIndex:selectedIndex animated:animated inner:NO];
 }
 
-- (void)_didSelectAtIndex:(NSUInteger)selectedIndex animated:(BOOL)animated {
+- (void)_didSelectAtIndex:(NSUInteger)selectedIndex animated:(BOOL)animated inner:(BOOL)inner {
     [self _selectAtIndex:selectedIndex animated:animated];
 
     if (_selectedIndex != selectedIndex) {
         _selectedIndex = selectedIndex;
 
-        [self _didSelectViewController:_viewControllers[selectedIndex]];
+        if (inner) [self _didSelectViewController:_viewControllers[selectedIndex]];
     }
 }
 
@@ -738,7 +753,8 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 }
 
 - (void)_didUpdateViewControllerTitleAtIndex:(NSUInteger)index {
-    [_segmentControl _reloadCellAtIndex:index animated:YES];
+    [_segmentControl _reloadCellAtIndex:index animated:NO];
+    [_segmentControl _scrollToIndex:_selectedIndex animated:NO];
 }
 
 - (void)_updateContentViewlayout {
@@ -847,7 +863,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
             [self _didScrollToIndex:index];
         }
     }
-    [self _didSelectAtIndex:index animated:YES];
+    [self _didSelectAtIndex:index animated:YES inner:YES];
     [self _endAppearanceTransitionAtIndex:index];
 }
 
@@ -866,7 +882,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"title"]) return;
+    if (![keyPath isEqualToString:@"title"]) return;
 
     UIViewController *viewController = [object isKindOfClass:[UIViewController class]] ? object : nil;
     if (!viewController) return;
