@@ -348,6 +348,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
         [_segmentControl setTitle:viewController.title forSegmentAtIndex:index];
     } else {
         [_horizontalListView reloadCellAtIndex:index animated:animated];
+        [self _updateSpacing];
     }
 }
 
@@ -654,7 +655,11 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     for (UIViewController *viewController in _viewControllers) {
         [viewController addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:NULL];
     }
-    if (self.viewLoaded) [self _reloadData];
+
+    if (self.viewLoaded) {
+        [self _updateContentViewlayout];
+        [self _reloadData];
+    }
 }
 
 - (void)_unloadViewControllers {
@@ -662,6 +667,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
         [viewController removeObserver:self forKeyPath:@"title"];
     }
 
+    [self _updateContentViewlayout];
     [self _reloadViewControllersAtIndexes:nil];
 }
 
@@ -850,6 +856,9 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
 - (void)_scrollWillEndWithOffset:(CGPoint)offset {
     CGFloat indexProgress = offset.x / CGRectGetWidth(_contentView.frame);
+    indexProgress = MAX(0, indexProgress);
+    indexProgress = MIN(indexProgress, _viewControllers.count - 1);
+
     [_segmentControl _selectIndexProgress:indexProgress animated:YES];
 
     if (floor(indexProgress) == _selectedIndex) [self _beginAppearanceTransition:YES atIndex:_selectedIndex];
@@ -858,6 +867,8 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 - (void)_scrollDidEndWithOffset:(CGPoint)offset dragging:(BOOL)dragging {
     CGFloat x = offset.x;
     NSInteger index = floor(x / CGRectGetWidth(_contentView.frame));
+    index = MAX(0, index);
+    index = MIN(index, _viewControllers.count - 1);
 
     if (dragging && index != _selectedIndex) {
         UIViewController *viewController = _viewControllers[index];

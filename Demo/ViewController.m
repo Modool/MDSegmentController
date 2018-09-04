@@ -109,7 +109,7 @@
     if (self = [super initWithStyle:style]) {
         self.title = @"root";
         self.delegate = self;
-        self.bounces = NO;
+//        self.bounces = NO;
         self.segmentControlSize = CGSizeMake(0, 30);
 
         self.segmentControl.fade = YES;
@@ -239,7 +239,7 @@
 //
 //    [self setSelectedIndex:index animated:YES];
 
-    self.viewControllers[2].title = @"hhh";
+    self.viewControllers[1].title = @"hhh";
 }
 
 - (void)didClickRightBarButton:(id)sender {
