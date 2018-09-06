@@ -80,7 +80,7 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 @property (nonatomic, assign) UIEdgeInsets scrollContentInset;
 
 /** Content view may be MDHorizontalListView or UISegmentControl. */
-@property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong, readonly) UIView *contentView;
 
 /** Inset of content view, default is UIEdgeInsetsZero,
  disabled if style is MDSegmentControllerStyleSegmentControl */
@@ -96,7 +96,7 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 
 /** background color of indicator, default is 2.f,
  disabled if style is MDSegmentControllerStyleSegmentControl */
-@property (nonatomic, strong, nullable) CALayer *indicatorLayer;
+@property (nonatomic, strong, nullable, readonly) CALayer *indicatorLayer;
 
 /** inset of indicator, default is UIEdgeInsetsZero,
  disabled if style is MDSegmentControllerStyleSegmentControl */
