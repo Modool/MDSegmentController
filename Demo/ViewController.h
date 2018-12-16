@@ -10,7 +10,7 @@
 
 #import "MDSegmentController.h"
 
-@interface ViewController : MDSegmentController
+@interface ViewController : UIViewController
 
 @end
 
