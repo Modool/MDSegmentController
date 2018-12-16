@@ -8,8 +8,7 @@
 
 #import <objc/runtime.h>
 
-#import <MDHorizontalListView/MDHorizontalListView.h>
-
+#import "MDHorizontalListView.h"
 #import "MDSegmentController.h"
 
 const CGFloat MDSegmentControllerAnimationDuration = .25f;
