@@ -33,17 +33,6 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 
 @end
 
-@class MDSegmentController;
-@protocol MDSegmentControllerDelegate <NSObject>
-
-@optional
-- (BOOL)segmentController:(MDSegmentController *)segmentController shouldSelectViewController:(UIViewController *)viewController;
-
-- (void)segmentController:(MDSegmentController *)segmentController didScrollToIndex:(NSUInteger)index;
-- (void)segmentController:(MDSegmentController *)segmentController didSelectViewController:(UIViewController *)viewController;
-
-@end
-
 @interface MDSegmentControl : UIView
 
 @property (nonatomic, weak, nullable) id<MDSegmentControlDelegate> delegate;
@@ -51,6 +40,10 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 /** Default is calculated by text length,
  disabled if style is MDSegmentControllerStyleSegmentControl. */
 @property (nonatomic, assign) CGFloat itemWidth;
+
+/** Actual item width is itemWidth added this or (dynamic item width added this,
+ Default is 0., disabled if style is MDSegmentControllerStyleSegmentControl. */
+@property (nonatomic, assign) CGFloat itemWidthInset;
 
 /** Font of segment item title, default is system font with label font size */
 @property (nonatomic, strong, nullable) UIFont *font;
@@ -96,7 +89,7 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 
 /** background color of indicator, default is 2.f,
  disabled if style is MDSegmentControllerStyleSegmentControl */
-@property (nonatomic, strong, nullable, readonly) CALayer *indicatorLayer;
+@property (nonatomic, strong, nullable, readonly) UIView *indicatorView;
 
 /** inset of indicator, default is UIEdgeInsetsZero,
  disabled if style is MDSegmentControllerStyleSegmentControl */
@@ -113,41 +106,59 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 
 @end
 
+@class MDSegmentController;
+@protocol MDSegmentControllerDelegate <NSObject>
+
+@optional
+- (BOOL)segmentController:(MDSegmentController *)segmentController shouldSelectViewController:(UIViewController *)viewController;
+
+- (void)segmentController:(MDSegmentController *)segmentController didScrollToIndex:(NSUInteger)index;
+- (void)segmentController:(MDSegmentController *)segmentController didSelectViewController:(UIViewController *)viewController;
+
+@end
+
 @interface MDSegmentController : UIViewController
 
 /** Default is MDSegmentControllerStyleEmbededContentView | MDSegmentControllerListView. */
-@property (nonatomic, assign, readonly) MDSegmentControllerStyle style;
+@property (assign, readonly) MDSegmentControllerStyle style;
 
 /** The segment control with UISegmentControl or MDHorizontalListView. */
-@property (nonatomic, strong, readonly) MDSegmentControl *segmentControl;
+@property (strong, readonly) MDSegmentControl *segmentControl;
 
 /** The delegate to notify events. */
-@property (nonatomic, weak, nullable) id<MDSegmentControllerDelegate> delegate;
+@property (weak, nullable) id<MDSegmentControllerDelegate> delegate;
 
 /** Child view controllers .*/
-@property (nonatomic, copy, nullable) NSArray<UIViewController *> *viewControllers;
+@property (copy, nullable) NSArray<UIViewController *> *viewControllers;
 
 /** Using safe area if it's UIEdgeInsetsZero */
-@property (nonatomic, assign) UIEdgeInsets contentInset;
+@property (assign) UIEdgeInsets contentInset;
 
-@property (nonatomic, strong, readonly) UIView *contentView;
-@property (nonatomic, strong, nullable) UIViewController *selectedViewController;
+/** Custom content view for additional sub views. */
+@property (strong, readonly) UIView *contentView;
 
-/** Default YES. if YES, bounces past edge of content and back again */
+/** Default YES, if YES, bounces past edge of content and back again */
 @property (nonatomic, assign, getter=isBounces) BOOL bounces;
 
-/** Default YES. allow to scroll content view if YES. */
-@property (nonatomic, assign, getter=isScrollEnabled) BOOL scrollEnabled;
+/** Default YES, allow to scroll content view if YES. */
+@property (assign, getter=isScrollEnabled) BOOL scrollEnabled;
 
-/** Default YES. adjust inset of content view with safe area if YES. */
-@property (nonatomic, assign, getter=isAutomaticallyAdjustsContentViewInsets) BOOL automaticallyAdjustsContentViewInsets;
+/** Default YES, adjust inset of content view with safe area if YES. */
+@property (assign, getter=isAutomaticallyAdjustsContentViewInsets) BOOL automaticallyAdjustsContentViewInsets;
 
-@property (nonatomic, assign) NSUInteger selectedIndex;
+/** Default NO, YES to reuse view controllers when reseting view controllers, the selected view controller will be reserved. */
+@property (assign, getter=isReusingWhenResetViewControllers) BOOL reusingWhenResetViewControllers;
+
+/** Current selected view controller, nil for none of selection. */
+@property (strong, nullable) UIViewController *selectedViewController;
+
+/** Current selected index, default is 0. */
+@property (assign) NSUInteger selectedIndex;
 - (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated;
 
 /** The size of segment controll, width will be view's width if style is
  MDSegmentControllerStyleEmbededContentView. */
-@property (nonatomic, assign) CGSize segmentControlSize;
+@property (assign) CGSize segmentControlSize;
 
 /**
  Method to initilize with style
@@ -156,6 +167,34 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
  @return MDSegmentController instance
  */
 - (instancetype)initWithStyle:(MDSegmentControllerStyle)style NS_DESIGNATED_INITIALIZER;
+
+@end
+
+@interface MDSegmentItem : UITabBarItem
+
+@property (nonatomic, copy, nullable) NSAttributedString *titleAttributeString;
+@property (nonatomic, copy, nullable) NSAttributedString *selectedTitleAttributeString;
+
+@property (nonatomic, copy, nullable) UIColor *badgeColor;
+@property (nonatomic, assign) CGRect badgeValueContentInset;
+
+- (nullable NSDictionary<NSAttributedStringKey,id> *)badgeTextAttributesForState:(UIControlState)state;
+- (void)setBadgeTextAttributes:(nullable NSDictionary<NSAttributedStringKey,id> *)textAttributes forState:(UIControlState)state;
+
+- (instancetype)initWithTabBarSystemItem:(UITabBarSystemItem)systemItem tag:(NSInteger)tag NS_UNAVAILABLE;
+
+@property (nonatomic, strong) UIImage *landscapeImagePhone NS_UNAVAILABLE;
+@property (nonatomic, strong) UIImage *largeContentSizeImage NS_UNAVAILABLE;
+@property (nonatomic, assign) UIEdgeInsets landscapeImagePhoneInsets NS_UNAVAILABLE;
+@property (nonatomic, assign) UIEdgeInsets largeContentSizeImageInsets NS_UNAVAILABLE;
+
+@end
+
+@interface UIViewController (MDSegmentController)
+
+@property (nonatomic, weak, readonly) MDSegmentController *segmentController;
+
+@property (nonatomic, strong) MDSegmentItem *segmentItem;
 
 @end
 

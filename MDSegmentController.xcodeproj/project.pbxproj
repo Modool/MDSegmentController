@@ -7,15 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0808B4112133E7070037B83C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0808B4062133E7070037B83C /* AppDelegate.m */; };
 		0808B4122133E7070037B83C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0808B4072133E7070037B83C /* Assets.xcassets */; };
 		0808B4132133E7070037B83C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0808B4082133E7070037B83C /* LaunchScreen.storyboard */; };
-		0808B4162133E7070037B83C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0808B40D2133E7070037B83C /* main.m */; };
-		0808B4172133E7070037B83C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0808B40F2133E7070037B83C /* ViewController.m */; };
-		0808B41D2133E7880037B83C /* MDHorizontalListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0808B41A2133E7870037B83C /* MDHorizontalListView.m */; };
-		0808B41E2133E7880037B83C /* MDHorizontalListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0808B41C2133E7870037B83C /* MDHorizontalListViewCell.m */; };
-		0808B4212133E7A30037B83C /* MDSegmentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0808B4202133E7A30037B83C /* MDSegmentController.m */; };
+		08AEF71321C6676000649342 /* MDSegmentController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08AEF6FE21C6676000649342 /* MDSegmentController.framework */; };
+		08AEF71421C6676000649342 /* MDSegmentController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 08AEF6FE21C6676000649342 /* MDSegmentController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		08AEF71F21C6678400649342 /* MDSegmentController.h in Headers */ = {isa = PBXBuildFile; fileRef = 08AEF71C21C6678400649342 /* MDSegmentController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		08AEF72021C6678400649342 /* MDSegmentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 08AEF71D21C6678400649342 /* MDSegmentController.m */; };
+		08AEF72221C667CB00649342 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0808B4062133E7070037B83C /* AppDelegate.m */; };
+		08AEF72321C667CB00649342 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0808B40D2133E7070037B83C /* main.m */; };
+		08AEF72421C667CB00649342 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0808B40F2133E7070037B83C /* ViewController.m */; };
+		DB16800155DF575EB07C8821 /* Pods_MDSegmentController_targets_MDSegmentController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 103ED9A450429EB77BD52414 /* Pods_MDSegmentController_targets_MDSegmentController.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		08AEF71121C6676000649342 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08242F7B213016850033C9E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08AEF6FD21C6676000649342;
+			remoteInfo = MDSegmentController;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		08AEF71821C6676000649342 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				08AEF71421C6676000649342 /* MDSegmentController.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0808B4052133E7070037B83C /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -26,13 +52,14 @@
 		0808B40D2133E7070037B83C /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0808B40E2133E7070037B83C /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		0808B40F2133E7070037B83C /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		0808B4192133E7870037B83C /* MDHorizontalListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDHorizontalListView.h; sourceTree = "<group>"; };
-		0808B41A2133E7870037B83C /* MDHorizontalListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDHorizontalListView.m; sourceTree = "<group>"; };
-		0808B41B2133E7870037B83C /* MDHorizontalListViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDHorizontalListViewCell.h; sourceTree = "<group>"; };
-		0808B41C2133E7870037B83C /* MDHorizontalListViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDHorizontalListViewCell.m; sourceTree = "<group>"; };
-		0808B41F2133E7A30037B83C /* MDSegmentController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MDSegmentController.h; sourceTree = SOURCE_ROOT; };
-		0808B4202133E7A30037B83C /* MDSegmentController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MDSegmentController.m; sourceTree = SOURCE_ROOT; };
-		08242F83213016850033C9E4 /* MDSegmentController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MDSegmentController.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		08242F83213016850033C9E4 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		08AEF6FE21C6676000649342 /* MDSegmentController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MDSegmentController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		08AEF71C21C6678400649342 /* MDSegmentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDSegmentController.h; sourceTree = "<group>"; };
+		08AEF71D21C6678400649342 /* MDSegmentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDSegmentController.m; sourceTree = "<group>"; };
+		08AEF71E21C6678400649342 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		103ED9A450429EB77BD52414 /* Pods_MDSegmentController_targets_MDSegmentController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MDSegmentController_targets_MDSegmentController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A2362B5764373679952E48C /* Pods-MDSegmentController_targets-MDSegmentController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MDSegmentController_targets-MDSegmentController.release.xcconfig"; path = "Pods/Target Support Files/Pods-MDSegmentController_targets-MDSegmentController/Pods-MDSegmentController_targets-MDSegmentController.release.xcconfig"; sourceTree = "<group>"; };
+		E215ADB69CD1C9C5630E594A /* Pods-MDSegmentController_targets-MDSegmentController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MDSegmentController_targets-MDSegmentController.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MDSegmentController_targets-MDSegmentController/Pods-MDSegmentController_targets-MDSegmentController.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +67,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08AEF71321C6676000649342 /* MDSegmentController.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08AEF6FB21C6676000649342 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB16800155DF575EB07C8821 /* Pods_MDSegmentController_targets_MDSegmentController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,55 +97,95 @@
 			path = Demo;
 			sourceTree = "<group>";
 		};
-		0808B4102133E7070037B83C /* MDSegmentController */ = {
-			isa = PBXGroup;
-			children = (
-				0808B41F2133E7A30037B83C /* MDSegmentController.h */,
-				0808B4202133E7A30037B83C /* MDSegmentController.m */,
-			);
-			path = MDSegmentController;
-			sourceTree = "<group>";
-		};
-		0808B4182133E7870037B83C /* MDHorizontalListView */ = {
-			isa = PBXGroup;
-			children = (
-				0808B4192133E7870037B83C /* MDHorizontalListView.h */,
-				0808B41A2133E7870037B83C /* MDHorizontalListView.m */,
-				0808B41B2133E7870037B83C /* MDHorizontalListViewCell.h */,
-				0808B41C2133E7870037B83C /* MDHorizontalListViewCell.m */,
-			);
-			name = MDHorizontalListView;
-			path = MDHorizontalListView/MDHorizontalListView;
-			sourceTree = "<group>";
-		};
 		08242F7A213016850033C9E4 = {
 			isa = PBXGroup;
 			children = (
-				0808B4182133E7870037B83C /* MDHorizontalListView */,
-				0808B4102133E7070037B83C /* MDSegmentController */,
 				0808B4042133E7070037B83C /* Demo */,
+				08AEF6FF21C6676000649342 /* MDSegmentController */,
 				08242F84213016850033C9E4 /* Products */,
+				5D2FF7B5F4A9EF5E1443D4C5 /* Pods */,
+				442EE942F5809D738A57599C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		08242F84213016850033C9E4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				08242F83213016850033C9E4 /* MDSegmentController.app */,
+				08242F83213016850033C9E4 /* Demo.app */,
+				08AEF6FE21C6676000649342 /* MDSegmentController.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
+		08AEF6FF21C6676000649342 /* MDSegmentController */ = {
+			isa = PBXGroup;
+			children = (
+				08AEF71E21C6678400649342 /* Info.plist */,
+				08AEF71C21C6678400649342 /* MDSegmentController.h */,
+				08AEF71D21C6678400649342 /* MDSegmentController.m */,
+			);
+			path = MDSegmentController;
+			sourceTree = "<group>";
+		};
+		442EE942F5809D738A57599C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				103ED9A450429EB77BD52414 /* Pods_MDSegmentController_targets_MDSegmentController.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5D2FF7B5F4A9EF5E1443D4C5 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E215ADB69CD1C9C5630E594A /* Pods-MDSegmentController_targets-MDSegmentController.debug.xcconfig */,
+				4A2362B5764373679952E48C /* Pods-MDSegmentController_targets-MDSegmentController.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		08AEF6F921C6676000649342 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08AEF71F21C6678400649342 /* MDSegmentController.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
-		08242F82213016850033C9E4 /* MDSegmentController */ = {
+		08242F82213016850033C9E4 /* Demo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 08242F99213016860033C9E4 /* Build configuration list for PBXNativeTarget "MDSegmentController" */;
+			buildConfigurationList = 08242F99213016860033C9E4 /* Build configuration list for PBXNativeTarget "Demo" */;
 			buildPhases = (
 				08242F7F213016850033C9E4 /* Sources */,
 				08242F80213016850033C9E4 /* Frameworks */,
 				08242F81213016850033C9E4 /* Resources */,
+				08AEF71821C6676000649342 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				08AEF71221C6676000649342 /* PBXTargetDependency */,
+			);
+			name = Demo;
+			productName = MDSegmentController;
+			productReference = 08242F83213016850033C9E4 /* Demo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		08AEF6FD21C6676000649342 /* MDSegmentController */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 08AEF71521C6676000649342 /* Build configuration list for PBXNativeTarget "MDSegmentController" */;
+			buildPhases = (
+				F284FC1318BD2AB10F83AD8B /* [CP] Check Pods Manifest.lock */,
+				08AEF6F921C6676000649342 /* Headers */,
+				08AEF6FA21C6676000649342 /* Sources */,
+				08AEF6FB21C6676000649342 /* Frameworks */,
+				08AEF6FC21C6676000649342 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -117,8 +193,8 @@
 			);
 			name = MDSegmentController;
 			productName = MDSegmentController;
-			productReference = 08242F83213016850033C9E4 /* MDSegmentController.app */;
-			productType = "com.apple.product-type.application";
+			productReference = 08AEF6FE21C6676000649342 /* MDSegmentController.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -131,6 +207,9 @@
 				TargetAttributes = {
 					08242F82213016850033C9E4 = {
 						CreatedOnToolsVersion = 9.4.1;
+					};
+					08AEF6FD21C6676000649342 = {
+						CreatedOnToolsVersion = 10.1;
 					};
 				};
 			};
@@ -147,7 +226,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				08242F82213016850033C9E4 /* MDSegmentController */,
+				08242F82213016850033C9E4 /* Demo */,
+				08AEF6FD21C6676000649342 /* MDSegmentController */,
 			);
 		};
 /* End PBXProject section */
@@ -162,23 +242,68 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		08AEF6FC21C6676000649342 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F284FC1318BD2AB10F83AD8B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MDSegmentController_targets-MDSegmentController-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		08242F7F213016850033C9E4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0808B4172133E7070037B83C /* ViewController.m in Sources */,
-				0808B4162133E7070037B83C /* main.m in Sources */,
-				0808B4212133E7A30037B83C /* MDSegmentController.m in Sources */,
-				0808B4112133E7070037B83C /* AppDelegate.m in Sources */,
-				0808B41D2133E7880037B83C /* MDHorizontalListView.m in Sources */,
-				0808B41E2133E7880037B83C /* MDHorizontalListViewCell.m in Sources */,
+				08AEF72421C667CB00649342 /* ViewController.m in Sources */,
+				08AEF72321C667CB00649342 /* main.m in Sources */,
+				08AEF72221C667CB00649342 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08AEF6FA21C6676000649342 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08AEF72021C6678400649342 /* MDSegmentController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		08AEF71221C6676000649342 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08AEF6FD21C6676000649342 /* MDSegmentController */;
+			targetProxy = 08AEF71121C6676000649342 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		0808B4082133E7070037B83C /* LaunchScreen.storyboard */ = {
@@ -338,6 +463,67 @@
 			};
 			name = Release;
 		};
+		08AEF71621C6676000649342 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E215ADB69CD1C9C5630E594A /* Pods-MDSegmentController_targets-MDSegmentController.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = G435W97VY4;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = MDSegmentController/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.modool.MDSegmentController;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		08AEF71721C6676000649342 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4A2362B5764373679952E48C /* Pods-MDSegmentController_targets-MDSegmentController.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = G435W97VY4;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = MDSegmentController/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.modool.MDSegmentController;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -350,11 +536,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		08242F99213016860033C9E4 /* Build configuration list for PBXNativeTarget "MDSegmentController" */ = {
+		08242F99213016860033C9E4 /* Build configuration list for PBXNativeTarget "Demo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				08242F9A213016860033C9E4 /* Debug */,
 				08242F9B213016860033C9E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		08AEF71521C6676000649342 /* Build configuration list for PBXNativeTarget "MDSegmentController" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08AEF71621C6676000649342 /* Debug */,
+				08AEF71721C6676000649342 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
