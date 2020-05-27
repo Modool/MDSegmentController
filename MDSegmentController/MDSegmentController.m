@@ -7,8 +7,8 @@
 //
 
 #import <objc/runtime.h>
+#import <MDHorizontalListView/MDHorizontalListView.h>
 
-#import "MDHorizontalListView.h"
 #import "MDSegmentController.h"
 
 const CGFloat MDSegmentControllerAnimationDuration = .25f;
@@ -244,6 +244,10 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
 @property (nonatomic, strong, readonly) UILabel *selectedTitleLabel;
 
+@property (nonatomic, strong) UIFont *font;
+@property (nonatomic, strong) UIColor *textColor;
+@property (nonatomic, strong) UIColor *selectedTextColor;
+
 @property (nonatomic, strong, readonly) _MDSegmentBadgeValueLabel *badgeValueLabel;
 @property (nonatomic, strong, readonly) _MDSegmentBadgeValueLabel *selectedBadgeValueLabel;
 
@@ -300,6 +304,12 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     [self _layoutSubviews];
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    _item = nil;
+}
+
 #pragma mark - accessor
 
 - (void)setItem:(MDSegmentItem *)item {
@@ -330,8 +340,8 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     _progress = progress;
 
     void (^transform)(void) = ^{
-        self->_backgroundView.alpha = (1 - progress);
-        self->_selectedBckgroundView.alpha = progress;
+        _backgroundView.alpha = (1 - progress);
+        _selectedBckgroundView.alpha = progress;
     };
 
     if (animated) {
@@ -380,14 +390,19 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     BOOL selected = state == UIControlStateSelected;
 
     UILabel *label = selected ? _selectedTitleLabel : _titleLabel;
-    label.text = _item.title;
-
-    NSAttributedString *attributedString = selected ? [_item titleAttributeString] : [_item selectedTitleAttributeString];
+    NSAttributedString *attributedString = selected ? [_item selectedTitleAttributeString] : [_item titleAttributeString];
     if (!attributedString) {
-        NSDictionary *attributes = [_item titleTextAttributesForState:state];
+        NSMutableDictionary *attributes = [[_item titleTextAttributesForState:state] ?: @{} mutableCopy];
+        
+        UIFont *font = attributes[NSFontAttributeName];
+        UIColor *textColor = attributes[NSForegroundColorAttributeName];
+        
+        if (!font) attributes[NSFontAttributeName] = _font ?: [UIFont systemFontOfSize:8];
+        if (!textColor) attributes[NSForegroundColorAttributeName] = (selected ? _selectedTextColor : _textColor) ?: [UIColor whiteColor];
+
         attributedString = _item.title ? [[NSAttributedString alloc] initWithString:_item.title attributes:attributes] : nil;
     }
-    if (attributedString) label.attributedText = attributedString;
+    label.attributedText = attributedString;
 }
 
 - (void)_updateBadgeValueLabel {
@@ -420,11 +435,8 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     UILabel *titleLabel = state == UIControlStateNormal ? _titleLabel : _selectedTitleLabel;
     _MDSegmentBadgeValueLabel *badgeValueLabel = state == UIControlStateNormal ? _badgeValueLabel : _selectedBadgeValueLabel;
 
-    CGPoint origin = CGPointMake(CGRectGetMaxX(titleLabel.frame), CGRectGetMinY(titleLabel.frame));
-    origin.x += offset.x;
-    origin.y += offset.y;
-
     CGSize size = [badgeValueLabel intrinsicContentSize];
+    CGPoint origin = CGPointMake(CGRectGetMaxX(titleLabel.frame), CGRectGetMinY(titleLabel.frame) - size.height);
     if ((origin.x + size.width) > contentSize.width) {
         origin.x = contentSize.width - size.width;
         origin.x = MAX(0, origin.x);
@@ -436,6 +448,10 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
         size.height = MIN(size.height, contentSize.height);
     }
+    
+    origin.x += offset.x;
+    origin.y += offset.y;
+
     badgeValueLabel.frame = CGRectMake(origin.x, origin.y, size.width, size.height);
 }
 
@@ -768,7 +784,6 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
 - (NSDictionary *)_titleAttributesForSelected:(BOOL)selected {
     NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-
     attributes[NSFontAttributeName] = _font ?: [UIFont systemFontOfSize:[UIFont labelFontSize]];
 
     if (selected && _selectedTextColor) attributes[NSForegroundColorAttributeName] = _selectedTextColor;
@@ -783,12 +798,17 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 }
 
 - (CGFloat)_widthForItem:(MDSegmentItem *)item {
+    CGFloat imageWidth = item.image.size.width;
+    
     CGSize size = _horizontalListView.bounds.size;
 
-    CGFloat imageWidth = item.image.size.width;
-    NSDictionary *attributes = [item titleTextAttributesForState:UIControlStateNormal];
+    NSAttributedString *attributedString = item.titleAttributeString;
+    if (!attributedString) {
+        NSDictionary *attributes = [item titleTextAttributesForState:UIControlStateNormal];
+        attributedString = [[NSAttributedString alloc] initWithString:item.title ?: @"" attributes:attributes];
+    }
+    CGFloat titleWidth = [attributedString boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin context:nil].size.width;
 
-    CGFloat titleWidth = [item.title boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size.width;
     return MAX(imageWidth, titleWidth) + _itemWidthInset;
 }
 
@@ -831,7 +851,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
         [_segmentControl setTitle:title forSegmentAtIndex:index];
     } else {
         [_horizontalListView reloadCellAtIndex:index animated:animated];
-
+        
         [self _updateSpacing];
         [self _updateIndexProgressAnimated:animated];
     }
@@ -903,6 +923,10 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
     MDSegmentItem *item = [self _itemAtIndex:index];
 
+    cell.font = _font;
+    cell.textColor = _textColor;
+    cell.selectedTextColor = _selectedTextColor;
+    
     cell.delegate = self;
     cell.fade = _fade;
     cell.item = item;
@@ -921,7 +945,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 #pragma mark - _MDSegmentItemCellDelegate
 
 - (void)_segmentItemCellDidRequireToReload:(_MDSegmentItemCell *)segmentItemCell {
-    [self _reloadCellAtIndex:segmentItemCell.index animated:YES];
+    [self _reloadCellAtIndex:segmentItemCell.index animated:NO];
 }
 
 #pragma mark - actions
@@ -975,11 +999,11 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 @implementation UIViewController (MDSegmentControllerPrivate)
 
 - (MDSegmentController *)segmentController {
-    return objc_getAssociatedObject(self, @selector(segmentControl));
+    return objc_getAssociatedObject(self, @selector(segmentController));
 }
 
 - (void)setSegmentController:(MDSegmentController *)segmentController {
-    objc_setAssociatedObject(self, @selector(segmentControl), segmentController, OBJC_ASSOCIATION_RETAIN);
+    objc_setAssociatedObject(self, @selector(segmentController), segmentController, OBJC_ASSOCIATION_ASSIGN);
 }
 
 @end
@@ -1106,7 +1130,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 }
 
 - (void)dealloc {
-    [self _unloadViewControllers];
+    [self _removeObservers];
 }
 
 #pragma mark - accessor
@@ -1157,6 +1181,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     UIViewController *viewController = _selectedIndex < viewControllers.count ? viewControllers[_selectedIndex] : nil;
     BOOL reusing = _reusingWhenResetViewControllers && currentViewController && currentViewController == viewController;
 
+    UIView.animationsEnabled = NO;
     if (reusing) {
         [self _unloadViewControllersForReusing];
     } else {
@@ -1169,6 +1194,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     } else {
         [self _loadViewControllers];
     }
+    UIView.animationsEnabled = YES;
     [_lock unlock];
 }
 
@@ -1303,8 +1329,9 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 - (void)_reloadData {
     if (_selectedIndex >= _viewControllers.count) return;
 
-    [self _loadSelectedViewController];
     [_segmentControl _reloadData];
+    [self _loadSelectedViewController];
+    [self _selectAtIndex:_selectedIndex animated:NO];
 }
 
 - (void)_loadSelectedViewController {
@@ -1380,12 +1407,10 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     
     [viewControllers enumerateObjectsUsingBlock:^(UIViewController *viewController, NSUInteger index, BOOL *stop) {
         if ([indexes containsIndex:index] && ![preparedViewControllers.allKeys containsObject:@(index)]) {
-            [viewController beginAppearanceTransition:YES animated:NO];
             [self _loadViewController:viewController atIndex:index];
         } else if (![indexes containsIndex:index] && [preparedViewControllers.allKeys containsObject:@(index)]) {
-            [viewController beginAppearanceTransition:NO animated:NO];
+            if (index != _selectedIndex) [viewController beginAppearanceTransition:NO animated:NO];
             [self _unloadViewController:viewController atIndex:index];
-            [viewController endAppearanceTransition];
         }
     }];
 }
@@ -1412,9 +1437,13 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     return YES;
 }
 
-- (void)_didSelectViewController:(UIViewController *)selectedCiewController {
-    if ([_delegate respondsToSelector:@selector(segmentController:didSelectViewController:)]) {
-        [_delegate segmentController:self didSelectViewController:selectedCiewController];
+- (void)_didSelectViewController:(UIViewController *)selectedViewController isDragging:(BOOL)isDragging {
+    if ([_delegate respondsToSelector:@selector(segmentController:didSelectViewController:isDragging:)]) {
+        [_delegate segmentController:self didSelectViewController:selectedViewController isDragging:isDragging];
+    } else {
+        if ([_delegate respondsToSelector:@selector(segmentController:didSelectViewController:)]) {
+            [_delegate segmentController:self didSelectViewController:selectedViewController];
+        }
     }
 }
 
@@ -1432,6 +1461,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     viewController.segmentController = self;
 
     [self addChildViewController:viewController];
+    [viewController beginAppearanceTransition:YES animated:NO];
     [_scrollView addSubview:viewController.view];
     [self _layoutViewController:viewController atIndex:index];
 
@@ -1446,6 +1476,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     [viewController willMoveToParentViewController:nil];
 
     [viewController.view removeFromSuperview];
+    [viewController endAppearanceTransition];
     [viewController removeFromParentViewController];
 
     [_preparedViewControllers removeObjectForKey:@(index)];
@@ -1517,16 +1548,15 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
         segmentFrame = CGRectMake((CGRectGetWidth(bounds) - segmentSize.width) / 2., insets.top, segmentSize.width, segmentSize.height);
         scrollFrame = CGRectMake(0, insets.top + segmentSize.height, CGRectGetWidth(bounds), CGRectGetHeight(bounds) - insets.top - insets.bottom - segmentSize.height);
     }
-    CGSize size = _scrollView.frame.size;
-    size.width *= _viewControllers.count;
-
-    _scrollView.contentOffset = CGPointMake(_selectedIndex * size.width, 0);
-    _scrollView.contentSize = size;
-
     _scrollView.frame = scrollFrame;
     _segmentControl.frame = segmentFrame;
 
+    CGSize size = scrollFrame.size;
     self.preferredContentSize = size;
+
+    CGSize contentSize = CGSizeMake(size.width * _viewControllers.count, size.height);
+    _scrollView.contentSize = contentSize;
+    _scrollView.contentOffset = CGPointMake(_selectedIndex * size.width, 0);
 
     [_preparedViewControllers enumerateKeysAndObjectsUsingBlock:^(NSNumber *index, UIViewController *viewController, BOOL *stop) {
         [self _layoutViewController:viewController atIndex:index.unsignedIntegerValue];
@@ -1589,11 +1619,11 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     if (offsetEnabled) {
         [self _scrollToIndex:index animated:animated];
     } else {
-        [self _scrollAtIndex:index animated:animated];
+        [self _scrollAtIndex:index animated:animated isDragging:YES];
     }
 }
 
-- (void)_scrollAtIndex:(NSUInteger)index animated:(BOOL)animated {
+- (void)_scrollAtIndex:(NSUInteger)index animated:(BOOL)animated isDragging:(BOOL)isDragging {
     if (index != _selectedIndex) {
         UIViewController *viewController = _viewControllers[index];
         BOOL shouldSelect = [self _shouldSelectViewController:viewController];
@@ -1605,7 +1635,7 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
 
             [self _didScrollToIndex:index];
             [self _didSelectAtIndex:index animated:animated];
-            [self _didSelectViewController:_viewControllers[index]];
+            [self _didSelectViewController:_viewControllers[index] isDragging:isDragging];
         }
     }
     [self _endAppearanceTransitionAtIndex:index];
@@ -1629,10 +1659,10 @@ const CGFloat MDSegmentControllerSegmentSpacingDynamic = CGFLOAT_MAX;
     CGPoint offset = CGPointMake(index * CGRectGetWidth(_scrollView.frame), 0);
 
     void (^animation)(void) = ^{
-        self->_scrollView.contentOffset = offset;
+        _scrollView.contentOffset = offset;
     };
     void (^completion)(void) = ^{
-        [self _scrollAtIndex:index animated:animated];
+        [self _scrollAtIndex:index animated:animated isDragging:NO];
     };
 
     animated = animated && offset.x != _scrollView.contentOffset.x;

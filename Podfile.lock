@@ -1,0 +1,16 @@
+PODS:
+  - MDHorizontalListView (1.0.0)
+
+DEPENDENCIES:
+  - MDHorizontalListView (~> 1.0.0)
+
+SPEC REPOS:
+  https://github.com/Modool/cocoapods-specs.git:
+    - MDHorizontalListView
+
+SPEC CHECKSUMS:
+  MDHorizontalListView: 9218f8e9bfcc4dbb65b329738da79d85de7af97b
+
+PODFILE CHECKSUM: 60a0413dee842e7354cba82d6d6ac86fef81ebfc
+
+COCOAPODS: 1.5.3

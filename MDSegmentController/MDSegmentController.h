@@ -114,6 +114,7 @@ typedef NS_ENUM(NSUInteger, MDSegmentControllerStyle) {
 
 - (void)segmentController:(MDSegmentController *)segmentController didScrollToIndex:(NSUInteger)index;
 - (void)segmentController:(MDSegmentController *)segmentController didSelectViewController:(UIViewController *)viewController;
+- (void)segmentController:(MDSegmentController *)segmentController didSelectViewController:(UIViewController *)viewController isDragging:(BOOL)isDragging;
 
 @end
 
